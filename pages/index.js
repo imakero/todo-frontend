@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useContext } from "react"
+import TodoList from "../components/TodoList"
 import { UserContext } from "../context/UserContext"
 
 export default function Home() {
@@ -17,5 +18,5 @@ export default function Home() {
     return null
   }
 
-  return <Box w="300px">Welcome {user.username}</Box>
+  return <TodoList />
 }
