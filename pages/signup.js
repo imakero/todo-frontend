@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useRouter } from "next/router"
+import api from "../lib/api"
 
 const Signup = () => {
   const [username, setUsername] = useState("")
@@ -21,14 +22,9 @@ const Signup = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     const signup = async (username, password) => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const data = await api.post("/users", {
         body: JSON.stringify({ username, password }),
       })
-      const data = await res.json()
       if (data.error) {
         setError(data.error)
       } else {

@@ -12,6 +12,7 @@ import { useRouter } from "next/router"
 import { useState, useContext, useEffect } from "react"
 import InternalLink from "../components/InternalLink"
 import { UserContext } from "../context/UserContext"
+import api from "../lib/api"
 import { setAuthToken } from "../lib/auth"
 
 const Login = () => {
@@ -29,15 +30,11 @@ const Login = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+
     const login = async (username, password) => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const data = await api.post("/auth/login", {
         body: JSON.stringify({ username, password }),
       })
-      const data = await res.json()
       if (data.error) {
         setError(data.error)
       } else {
@@ -46,6 +43,7 @@ const Login = () => {
         router.push("/")
       }
     }
+
     login(username, password)
   }
 
