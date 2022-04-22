@@ -1,4 +1,4 @@
-import { Checkbox, HStack, Text } from "@chakra-ui/react"
+import { Checkbox, HStack } from "@chakra-ui/react"
 
 const TodoItem = ({ todo }) => {
   return (
