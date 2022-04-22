@@ -9,55 +9,53 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { useState } from "react"
-import useDataFetcher from "../hooks/useDataFetcher"
+import { useQuery } from "react-query"
+import { getTodos } from "../lib/apiWrappers"
+import CreateTodoInput from "./CreateTodoInput"
 import TodoItem from "./TodoItem"
 
 const TodoList = () => {
   const [completeFilter, setcompleteFilter] = useState("both")
-  const [{ data, isError }, setUrl] = useDataFetcher("/todos", {
-    todos: [],
-  })
+  const { data, status } = useQuery(
+    ["todos", completeFilter],
+    getTodos(completeFilter)
+  )
 
   const handleChange = (value) => {
-    if (value === "both") {
-      setUrl("/todos")
-    } else if (value === "complete") {
-      setUrl("/todos?completed=true")
-    } else if (value === "incomplete") {
-      setUrl("/todos?completed=false")
-    }
     setcompleteFilter(value)
   }
 
   return (
     <Box w="300px">
       <VStack align="start">
-        <Heading>Todos</Heading>
+        <Heading onClick={() => setUrl("/todos")}>Todos</Heading>
 
         <RadioGroup onChange={handleChange} value={completeFilter}>
           <Stack direction="row">
-            <Radio value="complete">Complete</Radio>
-            <Radio value="incomplete">Incomplete</Radio>
+            <Radio value="completed">Complete</Radio>
+            <Radio value="incompleted">Incomplete</Radio>
             <Radio value="both">Both</Radio>
           </Stack>
         </RadioGroup>
 
         <Divider />
 
-        {!isError &&
+        {status === "success" &&
           data.todos.map((todo) => <TodoItem key={todo._id} todo={todo} />)}
 
-        {!isError && !data.todos.length && (
+        {status === "success" && !data.todos.length && (
           <Text color="gray.400">There are no todos yet.</Text>
         )}
 
         <Divider />
 
-        {isError && (
+        {status === "error" && (
           <Text color="red.400">
             Could not fetch todos, please refresh the page to try again.
           </Text>
         )}
+
+        <CreateTodoInput />
       </VStack>
     </Box>
   )
