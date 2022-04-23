@@ -1,7 +1,6 @@
 import {
   Box,
   Divider,
-  Heading,
   Radio,
   RadioGroup,
   Stack,
@@ -26,7 +25,7 @@ const TodoList = () => {
   }
 
   return (
-    <Box w="300px">
+    <Box w="300px" background="gray.100" p={4} borderRadius={4}>
       <VStack align="start">
         <RadioGroup onChange={handleChange} value={completeFilter}>
           <Stack direction="row">

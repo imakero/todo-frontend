@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }) {
     <UserProvider>
       <QueryClientProvider client={queryClient}>
         <ChakraProvider>
-          <Box w="100%" align="center">
+          <Box w="100%" align="center" background="teal.200" minHeight="100vh">
             <Navbar />
             <Component {...pageProps} />
           </Box>

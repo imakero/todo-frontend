@@ -45,6 +45,7 @@ const CreateTodoInput = () => {
           value={todoTitle}
           onChange={({ target }) => setTodoTitle(target.value)}
           placeholder="Type something..."
+          background="white"
         />
         <FormErrorMessage>{error}</FormErrorMessage>
       </FormControl>
