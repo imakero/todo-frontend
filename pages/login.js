@@ -70,6 +70,8 @@ const Login = () => {
               type="text"
               value={username}
               onChange={({ target }) => setUsername(target.value)}
+              placeholder="username"
+              bg="white"
             />
           </FormControl>
           <FormControl>
@@ -79,6 +81,8 @@ const Login = () => {
               type="password"
               value={password}
               onChange={({ target }) => setPassword(target.value)}
+              placeholder="password"
+              bg="white"
             />
           </FormControl>
           {error && <Text color="red.400">{error.message}</Text>}
