@@ -28,8 +28,6 @@ const TodoList = () => {
   return (
     <Box w="300px">
       <VStack align="start">
-        <Heading onClick={() => setUrl("/todos")}>Todos</Heading>
-
         <RadioGroup onChange={handleChange} value={completeFilter}>
           <Stack direction="row">
             <Radio value="completed">Complete</Radio>
