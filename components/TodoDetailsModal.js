@@ -118,7 +118,6 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
           if (data.error) {
             setUploadError(data.error.message)
           } else {
-            console.log("not an error")
             setAttachment("")
             setUploadError(null)
           }

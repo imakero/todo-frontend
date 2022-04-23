@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react"
 import { useMutation, useQueryClient } from "react-query"
 import { toggleTodo } from "../lib/apiWrappers"
-import { GrTextAlignFull } from "react-icons/gr"
+import { GrAttachment, GrTextAlignFull } from "react-icons/gr"
 import TodoDetailsModal from "./TodoDetailsModal"
 
 const TodoItem = ({ todo }) => {
@@ -45,7 +45,10 @@ const TodoItem = ({ todo }) => {
           </Box>
           <Text>{todo.title}</Text>
         </HStack>
-        {todo.content && <GrTextAlignFull />}
+        <HStack>
+          {todo.content && <GrTextAlignFull />}
+          {todo.attachments.length && <GrAttachment />}
+        </HStack>
       </VStack>
       <TodoDetailsModal todo={todo} isOpen={isOpen} onClose={onClose} />
     </>
