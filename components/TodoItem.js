@@ -26,6 +26,7 @@ const TodoItem = ({ todo }) => {
         w="100%"
         borderRadius={4}
         onClick={onOpen}
+        cursor="pointer"
       >
         <HStack>
           <Checkbox isChecked={todo.completed} onChange={handleChange} />
