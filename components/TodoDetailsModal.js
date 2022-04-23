@@ -26,12 +26,18 @@ import { GrTextAlignFull, GrAttachment } from "react-icons/gr"
 import { BiTask } from "react-icons/bi"
 import Attachment from "./Attachment"
 import { useMutation, useQueryClient } from "react-query"
-import { removeTodoAttachment, updateTodo } from "../lib/apiWrappers"
+import {
+  addTodoAttachment,
+  removeTodoAttachment,
+  updateTodo,
+} from "../lib/apiWrappers"
 
 const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
   const [title, setTitle] = useState(todo.title)
   const [titleError, setTitleError] = useState(null)
   const [contentError, setContentError] = useState(null)
+  const [uploadError, setUploadError] = useState(null)
+  const [attachment, setAttachment] = useState("")
   const [isEditingContent, setIsEditingContent] = useState(false)
   const [content, setContent] = useState(todo.content)
   const queryClient = useQueryClient()
@@ -47,6 +53,9 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
     onSuccess: invalidateTodos,
   })
   const attachmentDeletionMutation = useMutation(removeTodoAttachment, {
+    onSuccess: invalidateTodos,
+  })
+  const attachmentUploadMutation = useMutation(addTodoAttachment, {
     onSuccess: invalidateTodos,
   })
 
@@ -94,6 +103,28 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
 
   const handleAttachmentSubmit = (event) => {
     event.preventDefault()
+
+    if (!attachment) {
+      return
+    }
+
+    attachmentUploadMutation.mutate(
+      {
+        todoId: todo._id,
+        attachment,
+      },
+      {
+        onSuccess: (data) => {
+          if (data.error) {
+            setUploadError(data.error.message)
+          } else {
+            console.log("not an error")
+            setAttachment("")
+            setUploadError(null)
+          }
+        },
+      }
+    )
   }
 
   return (
@@ -132,7 +163,7 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
               my={2}
               onClick={() => !isEditingContent && setIsEditingContent(true)}
             >
-              {!isEditingContent ? (
+              {!isEditingContent && content ? (
                 <ReactMarkdown components={ChakraUIRenderer()} skipHtml>
                   {content}
                 </ReactMarkdown>
@@ -141,7 +172,9 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
                   value={content}
                   onClick={(event) => {
                     event.stopPropagation()
+                    setIsEditingContent(true)
                   }}
+                  placeholder="Add a detailed description of this todo."
                   onChange={(event) => setContent(event.target.value)}
                   onBlur={handleContentSubmit}
                 ></Textarea>
@@ -163,10 +196,16 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
                 ))}
               </List>
               <form onSubmit={handleAttachmentSubmit}>
-                <HStack>
-                  <Input type="file" />
-                  <Button type="submit">Upload</Button>
-                </HStack>
+                <VStack>
+                  <HStack>
+                    <Input
+                      type="file"
+                      onChange={(event) => setAttachment(event.target.files[0])}
+                    />
+                    <Button type="submit">Upload</Button>
+                  </HStack>
+                  {uploadError && <Text color="red.300">{uploadError}</Text>}
+                </VStack>
               </form>
             </Box>
           </ModalBody>

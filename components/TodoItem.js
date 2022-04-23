@@ -1,4 +1,11 @@
-import { Checkbox, HStack, Text, useDisclosure, VStack } from "@chakra-ui/react"
+import {
+  Box,
+  Checkbox,
+  HStack,
+  Text,
+  useDisclosure,
+  VStack,
+} from "@chakra-ui/react"
 import { useMutation, useQueryClient } from "react-query"
 import { toggleTodo } from "../lib/apiWrappers"
 import { GrTextAlignFull } from "react-icons/gr"
@@ -17,6 +24,10 @@ const TodoItem = ({ todo }) => {
     toggleTodoMutation.mutate({ todoId: todo._id, completed: todo.completed })
   }
 
+  const handleClick = (event) => {
+    event.stopPropagation()
+  }
+
   return (
     <>
       <VStack
@@ -29,7 +40,9 @@ const TodoItem = ({ todo }) => {
         cursor="pointer"
       >
         <HStack>
-          <Checkbox isChecked={todo.completed} onChange={handleChange} />
+          <Box onClick={handleClick}>
+            <Checkbox isChecked={todo.completed} onChange={handleChange} />
+          </Box>
           <Text>{todo.title}</Text>
         </HStack>
         {todo.content && <GrTextAlignFull />}
