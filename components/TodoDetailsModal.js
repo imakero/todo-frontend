@@ -5,6 +5,9 @@ import {
   Editable,
   EditableInput,
   EditablePreview,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   Heading,
   HStack,
   Input,
@@ -22,20 +25,25 @@ import {
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
 import ChakraUIRenderer from "chakra-ui-markdown-renderer"
-import { GrTextAlignFull, GrAttachment } from "react-icons/gr"
+import { GrTextAlignFull, GrAttachment, GrTag } from "react-icons/gr"
 import { BiTask } from "react-icons/bi"
 import Attachment from "./Attachment"
 import { useMutation, useQueryClient } from "react-query"
 import {
   addTodoAttachment,
+  addTodotag,
   removeTodoAttachment,
+  removeTodoTag,
   updateTodo,
 } from "../lib/apiWrappers"
+import TagList from "./TagsList"
 
 const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
   const [title, setTitle] = useState(todo.title)
   const [titleError, setTitleError] = useState(null)
   const [contentError, setContentError] = useState(null)
+  const [tagInput, setTagInput] = useState("")
+  const [tagInputError, setTagInputError] = useState(null)
   const [uploadError, setUploadError] = useState(null)
   const [attachment, setAttachment] = useState("")
   const [isEditingContent, setIsEditingContent] = useState(false)
@@ -56,6 +64,12 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
     onSuccess: invalidateTodos,
   })
   const attachmentUploadMutation = useMutation(addTodoAttachment, {
+    onSuccess: invalidateTodos,
+  })
+  const removeTagMutation = useMutation(removeTodoTag, {
+    onSuccess: invalidateTodos,
+  })
+  const addTagMutation = useMutation(addTodotag, {
     onSuccess: invalidateTodos,
   })
 
@@ -120,6 +134,28 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
           } else {
             setAttachment("")
             setUploadError(null)
+          }
+        },
+      }
+    )
+  }
+
+  const handleRemoveTag = (tagId) => {
+    removeTagMutation.mutate({ todoId: todo._id, tagId })
+  }
+
+  const handleAddTag = (event) => {
+    event.preventDefault()
+
+    addTagMutation.mutate(
+      { todoId: todo._id, tag: { text: tagInput } },
+      {
+        onSuccess: (data) => {
+          if (data.error) {
+            setTagInputError(data.error.data?.validationErrors?.text)
+          } else {
+            setTagInput("")
+            setTagInputError(null)
           }
         },
       }
@@ -206,6 +242,26 @@ const TodoDetailsModal = ({ todo, isOpen, onClose }) => {
                   {uploadError && <Text color="red.300">{uploadError}</Text>}
                 </VStack>
               </form>
+            </Box>
+            <Divider my={2} />
+
+            <HStack mb={2}>
+              <GrTag />
+              <Heading fontSize="lg">Tags</Heading>
+            </HStack>
+            <Box ml={6}>
+              <TagList tags={todo.tags} onDelete={handleRemoveTag} />
+              <Box as="form" onSubmit={handleAddTag} mt={2}>
+                <FormControl isInvalid={tagInputError}>
+                  <Input
+                    type="text"
+                    value={tagInput}
+                    onChange={(event) => setTagInput(event.target.value)}
+                    placeholder="Type to add tags"
+                  />
+                  <FormErrorMessage>{tagInputError}</FormErrorMessage>
+                </FormControl>
+              </Box>
             </Box>
           </ModalBody>
 
