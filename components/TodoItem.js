@@ -1,6 +1,7 @@
 import {
   Box,
   Checkbox,
+  Flex,
   HStack,
   Text,
   useDisclosure,
@@ -10,6 +11,7 @@ import { useMutation, useQueryClient } from "react-query"
 import { toggleTodo } from "../lib/apiWrappers"
 import { GrAttachment, GrTextAlignFull } from "react-icons/gr"
 import TodoDetailsModal from "./TodoDetailsModal"
+import TagsList from "./TagsList"
 
 const TodoItem = ({ todo }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -40,15 +42,21 @@ const TodoItem = ({ todo }) => {
         cursor="pointer"
       >
         <HStack>
-          <Box onClick={handleClick}>
+          <Flex
+            onClick={handleClick}
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+          >
             <Checkbox isChecked={todo.completed} onChange={handleChange} />
-          </Box>
+          </Flex>
           <Text>{todo.title}</Text>
         </HStack>
         <HStack>
           {todo.content && <GrTextAlignFull />}
           {todo.attachments.length && <GrAttachment />}
         </HStack>
+        <TagsList tags={todo.tags} />
       </VStack>
       <TodoDetailsModal todo={todo} isOpen={isOpen} onClose={onClose} />
     </>

@@ -1,6 +1,9 @@
 import {
   Box,
   Divider,
+  FormControl,
+  FormLabel,
+  Input,
   Radio,
   RadioGroup,
   Stack,
@@ -12,16 +15,28 @@ import { useQuery } from "react-query"
 import { getTodos } from "../lib/apiWrappers"
 import CreateTodoInput from "./CreateTodoInput"
 import TodoItem from "./TodoItem"
+import TagsList from "./TagsList"
 
 const TodoList = () => {
   const [completeFilter, setcompleteFilter] = useState("both")
+  const [tagsFilter, setTagsFilter] = useState([])
+  const [tagInput, setTagInput] = useState("")
   const { data, status } = useQuery(
-    ["todos", completeFilter],
-    getTodos(completeFilter)
+    ["todos", completeFilter, tagsFilter],
+    getTodos({ completeFilter, tagsFilter })
   )
 
   const handleChange = (value) => {
     setcompleteFilter(value)
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    if (!tagsFilter.includes(tagInput)) {
+      setTagsFilter([...tagsFilter, tagInput])
+    }
+    setTagInput("")
   }
 
   return (
@@ -34,6 +49,30 @@ const TodoList = () => {
             <Radio value="both">Both</Radio>
           </Stack>
         </RadioGroup>
+
+        <Divider />
+
+        <Box as="form" onSubmit={handleSubmit} w="100%">
+          <FormControl>
+            <FormLabel>Filter by tags</FormLabel>
+            <TagsList
+              tags={tagsFilter.map((tag) => ({ text: tag, _id: tag }))}
+              onDelete={(tagText) => {
+                return setTagsFilter(
+                  tagsFilter.filter((tag) => tag !== tagText)
+                )
+              }}
+            />
+            <Input
+              type="text"
+              bg="white"
+              mt={2}
+              value={tagInput}
+              onChange={(event) => setTagInput(event.target.value)}
+              placeholder="Enter tags to filter by"
+            />
+          </FormControl>
+        </Box>
 
         <Divider />
 
